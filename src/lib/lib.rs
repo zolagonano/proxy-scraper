@@ -3,26 +3,38 @@ use url::Url;
 
 pub trait Proxy {}
 
+/// Represents an MTProxy, a specific type of proxy.
 #[derive(Debug)]
 pub struct MTProxy {
+    /// The host address of the MTProxy.
     pub host: String,
+    /// The port number for the MTProxy.
     pub port: u32,
+    /// The secret associated with the MTProxy.
     pub secret: String,
 }
 
-impl Proxy for MTProxy {}
-
-pub enum ProxyType {
-    MTProxy,
-}
-
-pub struct Scraper(ProxyType);
+/// A scraper for extracting MTProxy information from a given source string.
+pub struct Scraper();
 
 impl Scraper {
-    pub fn new(proxy_type: ProxyType) -> Self {
-        Scraper(proxy_type)
-    }
-
+    /// Scrape MTProxy information from the provided source string.
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - A string containing MTProxy information to be scraped.
+    ///
+    /// # Returns
+    ///
+    /// A vector of `MTProxy` instances parsed from the source string.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let source = "Hello https://t.me/proxy?server=proxy.example.com&port=8080&secret=mysecret";
+    /// let proxies = Scraper::scrape_mtproxy(source);
+    /// println!("{:?}", proxies);
+    /// ```
     pub fn scrape_mtproxy(source: &str) -> Vec<MTProxy> {
         let mut proxy_list: Vec<MTProxy> = Vec::new();
         let regex = Regex::new(

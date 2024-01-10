@@ -1,5 +1,11 @@
 # Proxy Scraper
 
+![b](https://img.shields.io/crates/l/proxy-scraper)
+![b](https://img.shields.io/crates/d/proxy-scraper)
+![b](https://img.shields.io/crates/v/proxy-scraper)
+![b](https://img.shields.io/docsrs/proxy-scraper)
+
+
 The **Proxy Scraper** is a Rust command-line tool that allows users to scrape proxy information from URLs.
 
 ## Features

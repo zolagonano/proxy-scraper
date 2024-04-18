@@ -1,8 +1,7 @@
-#[cfg(feature = "scraper")]
-pub mod proxy_scraper;
-
 use regex::Regex;
 use url::Url;
+
+#[cfg(feature = "scraper")]
 
 pub trait Proxy {}
 

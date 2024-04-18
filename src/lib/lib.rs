@@ -20,6 +20,15 @@ pub struct MTProxy {
 pub struct Scraper();
 
 impl Scraper {
+    fn seperate_links(text: &str) -> String {
+        let regex = Regex::new(r#"\bhttps?://[^\s<>"']+[^.,;!?)"'\s]"#).unwrap();
+        let mut links = String::new();
+        for cap in regex.captures_iter(text) {
+            links.push_str(&cap[0].replace("&amp;amp;", "&").replace("%3D", "="));
+            links.push('\n');
+        }
+        links
+    }
     /// Scrape MTProxy information from the provided source string.
     ///
     /// # Arguments
@@ -34,10 +43,11 @@ impl Scraper {
     ///
     /// ```
     /// let source = "Hello https://t.me/proxy?server=proxy.example.com&port=8080&secret=mysecret";
-    /// let proxies = proxy_scraper::Scraper::scrape_mtproxy(source);
+    /// let proxies = Scraper::scrape_mtproxy(source);
     /// println!("{:?}", proxies);
     /// ```
     pub fn scrape_mtproxy(source: &str) -> Vec<MTProxy> {
+        let source = &Self::seperate_links(source);
         let mut proxy_list: Vec<MTProxy> = Vec::new();
         let regex = Regex::new(
         r#"(\w+:\/\/.*\/proxy\?((server=.+)|(port=.+)|(secret=([A-Fa-f0-9]+|[A-Za-z0-9+\/]+))))+"#,

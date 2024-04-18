@@ -35,7 +35,7 @@ impl Scraper {
     ///
     /// ```
     /// let source = "Hello https://t.me/proxy?server=proxy.example.com&port=8080&secret=mysecret";
-    /// let proxies = lib::Scraper::scrape_mtproxy(source);
+    /// let proxies = proxy_scraper::Scraper::scrape_mtproxy(source);
     /// println!("{:?}", proxies);
     /// ```
     pub fn scrape_mtproxy(source: &str) -> Vec<MTProxy> {

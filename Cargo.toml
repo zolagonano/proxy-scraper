@@ -12,6 +12,9 @@ license = "MIT"
 readme = "README.md"
 documentation = "https://docs.rs/proxy-scraper/"
 
+[features]
+scraper = []
+
 [lib]
 name = "lib"
 path = "src/lib/lib.rs"

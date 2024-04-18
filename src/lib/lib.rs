@@ -1,5 +1,5 @@
 #[cfg(feature = "scraper")]
-extern crate proxy_scraper;
+pub mod proxy_scraper;
 
 use regex::Regex;
 use url::Url;

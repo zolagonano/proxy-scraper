@@ -16,6 +16,15 @@ pub struct MTProxy {
     pub secret: String,
 }
 
+impl MTProxy {
+    pub fn to_url(&self) -> String {
+        format!(
+            "https://t.me/proxy?server={}&port={}&secret={}",
+            self.host, self.port, self.secret
+        )
+    }
+}
+
 /// Represents a Shadowsocks proxy.
 #[derive(Debug)]
 pub struct Shadowsocks {
@@ -27,6 +36,13 @@ pub struct Shadowsocks {
     pub password: String,
     /// The encryption method used by the Shadowsocks proxy.
     pub method: String,
+}
+
+impl Shadowsocks {
+    pub fn to_url(&self) -> String {
+        let base64_part = base64::encode(format!("{}:{}", self.method, self.password));
+        format!("ss://{}@{}:{}", base64_part, self.host, self.port)
+    }
 }
 
 /// A scraper for extracting MTProxy information from a given source string.

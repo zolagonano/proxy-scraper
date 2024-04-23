@@ -112,15 +112,18 @@ impl Scraper {
         .unwrap();
 
         for captures in regex.captures_iter(source) {
-            let base64_part = captures.get(1).unwrap().as_str();
-            let host = captures.get(3).unwrap().as_str().to_string();
+            let base64_part = captures.get(1).map(|b64| b64.as_str()).unwrap_or("");
+            let host = captures.get(3).map(|h| h.as_str()).unwrap_or("");
             let port: u32 = captures
                 .get(4)
-                .unwrap()
-                .as_str()
-                .to_string()
+                .map(|p| p.as_str())
+                .unwrap_or("0")
                 .parse::<u32>()
                 .unwrap();
+
+            if base64_part.is_empty() || host.is_empty() || port == 0 {
+                continue;
+            }
 
             let decoded_base64_part =
                 String::from_utf8(base64::decode(&base64_part).unwrap()).unwrap();
@@ -130,7 +133,7 @@ impl Scraper {
             let password = parts[1].to_string();
 
             proxy_list.push(Shadowsocks {
-                host,
+                host: host.to_string(),
                 port,
                 password,
                 method,

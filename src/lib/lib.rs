@@ -107,7 +107,7 @@ impl Scraper {
         let source = &Self::seperate_links(source);
         let mut proxy_list: Vec<Shadowsocks> = Vec::new();
         let regex = Regex::new(
-            r#"ss://((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)@((.+):\d+)#"#,
+            r#"ss://((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)@((.+):(\d+))#"#,
         )
         .unwrap();
 

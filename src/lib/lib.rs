@@ -1,5 +1,6 @@
 use regex::Regex;
 use url::Url;
+use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 
 #[cfg(feature = "scraper")]
 
@@ -40,7 +41,7 @@ pub struct Shadowsocks {
 
 impl Shadowsocks {
     pub fn to_url(&self) -> String {
-        let base64_part = base64::encode(format!("{}:{}", self.method, self.password));
+        let base64_part = URL_SAFE.encode(format!("{}:{}", self.method, self.password));
         format!("ss://{}@{}:{}", base64_part, self.host, self.port)
     }
 }
@@ -142,7 +143,7 @@ impl Scraper {
             }
 
             let decoded_base64_part =
-                String::from_utf8(base64::decode(&base64_part).unwrap()).unwrap();
+                String::from_utf8(URL_SAFE.decode(&base64_part).unwrap()).unwrap();
             let parts: Vec<&str> = decoded_base64_part.split(":").collect();
 
             let method = parts[0].to_string();

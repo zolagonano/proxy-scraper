@@ -55,6 +55,13 @@ pub struct VMess {
     pub metadata: Option<HashMap<String, String>>,
 }
 
+impl VMess {
+    pub fn to_url(&self) -> String {
+        let base64_part = URL_SAFE.encode(serde_json::to_vec_pretty(&self).unwrap());
+        format!("vmess://{}", base64_part)
+    }
+}
+
 impl Shadowsocks {
     pub fn to_url(&self) -> String {
         let base64_part = URL_SAFE.encode(format!("{}:{}", self.method, self.password));

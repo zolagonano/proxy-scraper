@@ -4,6 +4,7 @@ use std::str::FromStr;
 enum ProxyType {
     MTProxy,
     Shadowsocks,
+    VMess
 }
 
 impl FromStr for ProxyType {
@@ -13,6 +14,7 @@ impl FromStr for ProxyType {
         match s.to_lowercase().as_str() {
             "mtproxy" => Ok(Self::MTProxy),
             "ss" | "shadowsocks" => Ok(Self::Shadowsocks),
+            "vmess" => Ok(Self::VMess),
             _ => Err(()),
         }
     }
@@ -48,10 +50,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let result = proxy_scraper::Scraper::scrape_mtproxy(&context);
 
             println!("{:#?}", result);
-        },
+        }
         Ok(ProxyType::Shadowsocks) => {
             let context = fetch_url(&cli.source).await?;
             let result = proxy_scraper::Scraper::scrape_shadowsocks(&context);
+
+            println!("{:#?}", result);
+        }
+        Ok(ProxyType::VMess) => {
+            let context = fetch_url(&cli.source).await?;
+            let result = proxy_scraper::Scraper::scrape_vmess(&context);
 
             println!("{:#?}", result);
         }

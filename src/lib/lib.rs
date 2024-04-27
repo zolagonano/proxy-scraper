@@ -26,6 +26,10 @@ impl MTProxy {
             self.host, self.port, self.secret
         )
     }
+
+    pub fn scrape(source: &str) -> Vec<Self> {
+        Scraper::scrape_mtproxy(source)
+    }
 }
 
 /// Represents a Shadowsocks proxy.
@@ -60,12 +64,20 @@ impl VMess {
         let base64_part = URL_SAFE.encode(serde_json::to_vec_pretty(&self).unwrap());
         format!("vmess://{}", base64_part)
     }
+
+    pub fn scrape(source: &str) -> Vec<Self> {
+        Scraper::scrape_vmess(source)
+    }
 }
 
 impl Shadowsocks {
     pub fn to_url(&self) -> String {
         let base64_part = URL_SAFE.encode(format!("{}:{}", self.method, self.password));
         format!("ss://{}@{}:{}", base64_part, self.host, self.port)
+    }
+
+    pub fn scrape(source: &str) -> Vec<Self> {
+        Scraper::scrape_shadowsocks(source)
     }
 }
 

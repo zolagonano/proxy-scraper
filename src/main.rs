@@ -4,7 +4,7 @@ use std::str::FromStr;
 enum ProxyType {
     MTProxy,
     Shadowsocks,
-    VMess
+    VMess,
 }
 
 impl FromStr for ProxyType {
@@ -47,19 +47,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match ProxyType::from_str(&cli.proxy_type) {
         Ok(ProxyType::MTProxy) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::Scraper::scrape_mtproxy(&context);
+            let result = proxy_scraper::MTProxy::scrape(&context);
 
             println!("{:#?}", result);
         }
         Ok(ProxyType::Shadowsocks) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::Scraper::scrape_shadowsocks(&context);
+            let result = proxy_scraper::Shadowsocks::scrape(&context);
 
             println!("{:#?}", result);
         }
         Ok(ProxyType::VMess) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::Scraper::scrape_vmess(&context);
+            let result = proxy_scraper::VMess::scrape(&context);
 
             println!("{:#?}", result);
         }

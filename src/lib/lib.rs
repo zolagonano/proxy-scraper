@@ -45,6 +45,17 @@ pub struct Shadowsocks {
     pub method: String,
 }
 
+impl Shadowsocks {
+    pub fn to_url(&self) -> String {
+        let base64_part = URL_SAFE.encode(format!("{}:{}", self.method, self.password));
+        format!("ss://{}@{}:{}", base64_part, self.host, self.port)
+    }
+
+    pub fn scrape(source: &str) -> Vec<Self> {
+        Scraper::scrape_shadowsocks(source)
+    }
+}
+
 /// Represents a VMess proxy.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VMess {
@@ -70,14 +81,26 @@ impl VMess {
     }
 }
 
-impl Shadowsocks {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct VLess {
+    pub host: String,
+    pub port: u32,
+    pub id: String,
+    #[serde(flatten)]
+    pub parameters: Option<HashMap<String, String>>,
+}
+
+impl VLess {
     pub fn to_url(&self) -> String {
-        let base64_part = URL_SAFE.encode(format!("{}:{}", self.method, self.password));
-        format!("ss://{}@{}:{}", base64_part, self.host, self.port)
+        let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
+        format!(
+            "vless://{}@{}:{}?{}",
+            self.id, self.host, self.port, url_encoded_parameters
+        )
     }
 
     pub fn scrape(source: &str) -> Vec<Self> {
-        Scraper::scrape_shadowsocks(source)
+        Scraper::scrape_vless(source)
     }
 }
 
@@ -86,7 +109,7 @@ pub struct Scraper();
 
 impl Scraper {
     fn seperate_links(text: &str) -> String {
-        let regex = Regex::new(r#"\b(https|ss|vmess)?://[^\s<>"']+[^.,;!?)"'\s]"#).unwrap();
+        let regex = Regex::new(r#"\b(https|ss|vmess|vless)?://[^\s<>"']+[^.,;!?)"'\s]"#).unwrap();
         let mut links = String::new();
         for cap in regex.captures_iter(text) {
             links.push_str(&cap[0].replace("&amp;amp;", "&").replace("%3D", "="));
@@ -216,6 +239,39 @@ impl Scraper {
 
                 proxy_list.push(deserialized_vmess);
             }
+        }
+
+        proxy_list
+    }
+
+    pub fn scrape_vless(source: &str) -> Vec<VLess> {
+        let source = &Self::seperate_links(source);
+        let mut proxy_list: Vec<VLess> = Vec::new();
+        let regex = Regex::new(r#"vless://([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})@((.+):(\d+))\?(.+)#"#).unwrap();
+
+        for captures in regex.captures_iter(source) {
+            let uuid = captures.get(1).map(|id| id.as_str()).unwrap_or("");
+            let host = captures.get(3).map(|host| host.as_str()).unwrap_or("");
+            let port = captures.get(4).map(|port| port.as_str()).unwrap_or("");
+            let url_parameters = captures.get(5).map(|params| params.as_str()).unwrap_or("");
+
+            if uuid.is_empty() || host.is_empty() || port.is_empty() || url_parameters.is_empty() {
+                continue;
+            }
+
+            println!("{:#?}", captures);
+
+            let parameters: HashMap<String, String> =
+                serde_urlencoded::from_str(&url_parameters).unwrap();
+
+            let vless_proxy = VLess {
+                host: host.to_string(),
+                port: port.parse::<u32>().unwrap_or(0),
+                id: uuid.to_string(),
+                parameters: Some(parameters),
+            };
+
+            proxy_list.push(vless_proxy);
         }
 
         proxy_list

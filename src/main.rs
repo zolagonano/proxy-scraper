@@ -5,6 +5,7 @@ enum ProxyType {
     MTProxy,
     Shadowsocks,
     VMess,
+    VLess,
 }
 
 impl FromStr for ProxyType {
@@ -15,6 +16,7 @@ impl FromStr for ProxyType {
             "mtproxy" => Ok(Self::MTProxy),
             "ss" | "shadowsocks" => Ok(Self::Shadowsocks),
             "vmess" => Ok(Self::VMess),
+            "vless" => Ok(Self::VLess),
             _ => Err(()),
         }
     }
@@ -60,6 +62,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(ProxyType::VMess) => {
             let context = fetch_url(&cli.source).await?;
             let result = proxy_scraper::VMess::scrape(&context);
+
+            println!("{:#?}", result);
+        }
+        Ok(ProxyType::VLess) => {
+            let context = fetch_url(&cli.source).await?;
+            let result = proxy_scraper::VLess::scrape(&context);
 
             println!("{:#?}", result);
         }

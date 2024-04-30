@@ -117,7 +117,7 @@ impl Trojan {
     pub fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         format!(
-            "vless://{}@{}:{}?{}",
+            "trojan://{}@{}:{}?{}",
             self.password, self.host, self.port, url_encoded_parameters
         )
     }

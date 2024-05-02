@@ -7,6 +7,7 @@ enum ProxyType {
     VMess,
     VLess,
     Trojan,
+    Hysteria,
 }
 
 impl FromStr for ProxyType {
@@ -19,6 +20,7 @@ impl FromStr for ProxyType {
             "vmess" => Ok(Self::VMess),
             "vless" => Ok(Self::VLess),
             "trojan" => Ok(Self::Trojan),
+            "hysteria" => Ok(Self::Hysteria),
             _ => Err(()),
         }
     }
@@ -76,6 +78,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(ProxyType::Trojan) => {
             let context = fetch_url(&cli.source).await?;
             let result = proxy_scraper::Trojan::scrape(&context);
+
+            println!("{:#?}", result);
+        }
+        Ok(ProxyType::Hysteria) => {
+            println!("HY2");
+            let context = fetch_url(&cli.source).await?;
+            let result = proxy_scraper::Hysteria::scrape(&context);
 
             println!("{:#?}", result);
         }

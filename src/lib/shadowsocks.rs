@@ -1,5 +1,5 @@
-use regex::Regex;
 use base64::{engine::general_purpose::URL_SAFE, Engine as _};
+use regex::Regex;
 
 /// Represents a Shadowsocks proxy.
 #[derive(Debug)]
@@ -59,5 +59,3 @@ impl Shadowsocks {
         proxy_list
     }
 }
-
-

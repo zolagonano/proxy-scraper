@@ -1,4 +1,5 @@
 use argh::FromArgs;
+use proxy_scraper::*;
 use std::str::FromStr;
 
 enum ProxyType {
@@ -28,6 +29,14 @@ impl FromStr for ProxyType {
     }
 }
 
+macro_rules! scrape_proxy {
+    ($module:ident::$struct:ident, $context:expr) => {{
+        let context = fetch_url(&$context).await?;
+        let result = proxy_scraper::$module::$struct::scrape(&context);
+        println!("{:#?}", result);
+    }};
+}
+
 #[derive(Debug, FromArgs)]
 /// Scrap Proxies from URLs
 struct ProxyScraper {
@@ -53,48 +62,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli: ProxyScraper = argh::from_env();
 
     match ProxyType::from_str(&cli.proxy_type) {
-        Ok(ProxyType::MTProxy) => {
-            let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::mtproxy::MTProxy::scrape(&context);
+        Ok(ProxyType::MTProxy) => scrape_proxy!(mtproxy::MTProxy, cli.source),
 
-            println!("{:#?}", result);
-        }
-        Ok(ProxyType::Shadowsocks) => {
-            let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::shadowsocks::Shadowsocks::scrape(&context);
-
-            println!("{:#?}", result);
-        }
-        Ok(ProxyType::VMess) => {
-            let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::vmess::VMess::scrape(&context);
-
-            println!("{:#?}", result);
-        }
-        Ok(ProxyType::VLess) => {
-            let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::vless::VLess::scrape(&context);
-
-            println!("{:#?}", result);
-        }
-        Ok(ProxyType::Trojan) => {
-            let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::trojan::Trojan::scrape(&context);
-
-            println!("{:#?}", result);
-        }
-        Ok(ProxyType::Hysteria) => {
-            let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::hysteria::Hysteria::scrape(&context);
-
-            println!("{:#?}", result);
-        }
-        Ok(ProxyType::TUIC) => {
-            let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::tuic::TUIC::scrape(&context);
-
-            println!("{:#?}", result);
-        }
+        Ok(ProxyType::Shadowsocks) => scrape_proxy!(shadowsocks::Shadowsocks, cli.source),
+        Ok(ProxyType::VMess) => scrape_proxy!(vmess::VMess, cli.source),
+        Ok(ProxyType::VLess) => scrape_proxy!(vless::VLess, cli.source),
+        Ok(ProxyType::Trojan) => scrape_proxy!(trojan::Trojan, cli.source),
+        Ok(ProxyType::Hysteria) => scrape_proxy!(hysteria::Hysteria, cli.source),
+        Ok(ProxyType::TUIC) => scrape_proxy!(tuic::TUIC, cli.source),
         Err(_) => eprintln!("Error: Invalid Proxy Type"),
     }
 

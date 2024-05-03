@@ -13,7 +13,7 @@ readme = "README.md"
 documentation = "https://docs.rs/proxy-scraper/"
 
 [features]
-default = ["dep:argh", "dep:reqwest", "dep:tokio"]
+default = ["scraper", "dep:argh", "dep:reqwest", "dep:tokio"]
 scraper = []
 
 [lib]

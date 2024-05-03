@@ -1,5 +1,5 @@
-use url::Url;
 use regex::Regex;
+use url::Url;
 
 /// Represents an MTProxy, a specific type of proxy.
 #[derive(Debug)]

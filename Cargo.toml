@@ -1,6 +1,6 @@
 [package]
 name = "proxy-scraper"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Zola Gonano <zolagonano@protonmail.com>"]
 description = "A Rust command-line tool for scraping proxy information."

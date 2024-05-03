@@ -2,16 +2,37 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// Represents a TUIC proxy.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TUIC {
+    /// The host address of the TUIC proxy.
     pub host: String,
+    /// The port number for the TUIC proxy.
     pub port: u32,
+    /// The authentication string associated with the TUIC proxy.
     pub auth: String,
+    /// Additional parameters associated with the TUIC proxy.
     #[serde(flatten)]
     pub parameters: Option<HashMap<String, String>>,
 }
 
 impl TUIC {
+    /// Converts the TUIC proxy information into a TUIC URL.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use proxy_scraper::tuic::TUIC;
+    /// use std::collections::HashMap;
+    /// let proxy = TUIC {
+    ///     host: "example.com".to_string(),
+    ///     port: 443,
+    ///     auth: "auth123".to_string(),
+    ///     parameters: Some(HashMap::new()), // Insert additional parameters here
+    /// };
+    /// let url = proxy.to_url();
+    /// assert_eq!(url, "tuic://auth123@example.com:443?");
+    /// ```
     pub fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         format!(
@@ -20,6 +41,15 @@ impl TUIC {
         )
     }
 
+    /// Scrapes TUIC proxy information from the provided source string and returns a vector of TUIC instances.
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - A string containing the source code or text from which to extract TUIC proxy information.
+    ///
+    /// # Returns
+    ///
+    /// A vector of `TUIC` instances parsed from the source string.
     pub fn scrape(source: &str) -> Vec<Self> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<TUIC> = Vec::new();

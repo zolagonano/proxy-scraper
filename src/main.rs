@@ -67,7 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(ProxyType::VMess) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::VMess::scrape(&context);
+            let result = proxy_scraper::vmess::VMess::scrape(&context);
 
             println!("{:#?}", result);
         }

@@ -61,7 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(ProxyType::Shadowsocks) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::Shadowsocks::scrape(&context);
+            let result = proxy_scraper::shadowsocks::Shadowsocks::scrape(&context);
 
             println!("{:#?}", result);
         }

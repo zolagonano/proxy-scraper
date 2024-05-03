@@ -3,16 +3,36 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// Represents a VLess proxy.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VLess {
+    /// The host address of the VLess proxy.
     pub host: String,
+    /// The port number for the VLess proxy.
     pub port: u32,
+    /// The UUID of the VLess proxy.
     pub id: String,
+    /// Additional parameters associated with the VLess proxy.
     #[serde(flatten)]
     pub parameters: Option<HashMap<String, String>>,
 }
 
 impl VLess {
+    /// Converts the VLess proxy information into a VLess URL.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use proxy_scraper::vless::VLess;
+    /// let proxy = VLess {
+    ///     host: "example.com".to_string(),
+    ///     port: 443,
+    ///     id: "00000000-0000-0000-0000-000000000000".to_string(),
+    ///     parameters: None,
+    /// };
+    /// let url = proxy.to_url();
+    /// assert_eq!(url, "vless://00000000-0000-0000-0000-000000000000@example.com:443?");
+    /// ```
     pub fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         format!(
@@ -21,6 +41,15 @@ impl VLess {
         )
     }
 
+    /// Scrapes VLess proxy information from the provided source string and returns a vector of VLess instances.
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - A string containing the source code or text from which to extract VLess proxy information.
+    ///
+    /// # Returns
+    ///
+    /// A vector of `VLess` instances parsed from the source string.
     pub fn scrape(source: &str) -> Vec<Self> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<VLess> = Vec::new();

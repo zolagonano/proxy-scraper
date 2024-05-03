@@ -79,7 +79,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(ProxyType::Trojan) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::Trojan::scrape(&context);
+            let result = proxy_scraper::trojan::Trojan::scrape(&context);
 
             println!("{:#?}", result);
         }

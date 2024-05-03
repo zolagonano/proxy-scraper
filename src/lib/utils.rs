@@ -1,5 +1,6 @@
 use regex::Regex;
 
+/// Separate links from text and return them as a string.
 pub fn seperate_links(text: &str) -> String {
     let regex = Regex::new(
         r#"\b(https|ss|vmess|vless|trojan|hysteria2|hy2|hysteria)?://[^\s<>"']+[^.,;!?)"'\s]"#,

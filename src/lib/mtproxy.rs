@@ -1,4 +1,4 @@
-use crate::Url;
+use url::Url;
 use regex::Regex;
 
 /// Represents an MTProxy, a specific type of proxy.

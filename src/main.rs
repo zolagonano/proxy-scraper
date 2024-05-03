@@ -91,7 +91,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(ProxyType::TUIC) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::TUIC::scrape(&context);
+            let result = proxy_scraper::tuic::TUIC::scrape(&context);
 
             println!("{:#?}", result);
         }

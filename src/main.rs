@@ -73,7 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(ProxyType::VLess) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::VLess::scrape(&context);
+            let result = proxy_scraper::vless::VLess::scrape(&context);
 
             println!("{:#?}", result);
         }

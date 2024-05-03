@@ -55,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match ProxyType::from_str(&cli.proxy_type) {
         Ok(ProxyType::MTProxy) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::MTProxy::scrape(&context);
+            let result = proxy_scraper::mtproxy::MTProxy::scrape(&context);
 
             println!("{:#?}", result);
         }

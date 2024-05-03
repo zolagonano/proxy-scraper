@@ -2,16 +2,37 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// Represents a Trojan proxy.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Trojan {
+    /// The host address of the Trojan proxy.
     pub host: String,
+    /// The port number for the Trojan proxy.
     pub port: u32,
+    /// The password associated with the Trojan proxy.
     pub password: String,
+    /// Additional parameters associated with the Trojan proxy.
     #[serde(flatten)]
     pub parameters: Option<HashMap<String, String>>,
 }
 
 impl Trojan {
+    /// Converts the Trojan proxy information into a Trojan URL.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::collections::HashMap;
+    /// use proxy_scraper::trojan::Trojan;
+    /// let proxy = Trojan {
+    ///     host: "example.com".to_string(),
+    ///     port: 443,
+    ///     password: "password123".to_string(),
+    ///     parameters: Some(HashMap::new()), // Insert additional parameters here
+    /// };
+    /// let url = proxy.to_url();
+    /// assert_eq!(url, "trojan://password123@example.com:443?");
+    /// ```
     pub fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         format!(
@@ -20,6 +41,15 @@ impl Trojan {
         )
     }
 
+    /// Scrapes Trojan proxy information from the provided source string and returns a vector of Trojan instances.
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - A string containing the source code or text from which to extract Trojan proxy information.
+    ///
+    /// # Returns
+    ///
+    /// A vector of `Trojan` instances parsed from the source string.
     pub fn scrape(source: &str) -> Vec<Self> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<Trojan> = Vec::new();

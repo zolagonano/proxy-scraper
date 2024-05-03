@@ -2,17 +2,40 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// Represents a Hysteria proxy.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Hysteria {
+    /// The version of the Hysteria protocol.
     pub version: u8,
+    /// The host address of the Hysteria proxy.
     pub host: String,
+    /// The port number for the Hysteria proxy.
     pub port: u32,
+    /// The authentication string associated with the Hysteria proxy.
     pub auth: String,
+    /// Additional parameters associated with the Hysteria proxy.
     #[serde(flatten)]
     pub parameters: Option<HashMap<String, String>>,
 }
 
 impl Hysteria {
+    /// Converts the Hysteria proxy information into a Hysteria URL.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use proxy_scraper::hysteria::Hysteria;
+    /// use std::collections::HashMap;
+    /// let proxy = Hysteria {
+    ///     version: 1,
+    ///     host: "example.com".to_string(),
+    ///     port: 443,
+    ///     auth: "auth123".to_string(),
+    ///     parameters: Some(HashMap::new()), // Insert additional parameters here
+    /// };
+    /// let url = proxy.to_url();
+    /// assert_eq!(url, "hysteria://auth123@example.com:443?");
+    /// ```
     pub fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         let hysteria_version = match self.version {
@@ -26,6 +49,15 @@ impl Hysteria {
         )
     }
 
+    /// Scrapes Hysteria proxy information from the provided source string and returns a vector of Hysteria instances.
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - A string containing the source code or text from which to extract Hysteria proxy information.
+    ///
+    /// # Returns
+    ///
+    /// A vector of `Hysteria` instances parsed from the source string.
     pub fn scrape(source: &str) -> Vec<Self> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<Hysteria> = Vec::new();

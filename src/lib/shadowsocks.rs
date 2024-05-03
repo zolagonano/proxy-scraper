@@ -15,11 +15,35 @@ pub struct Shadowsocks {
 }
 
 impl Shadowsocks {
+    /// Converts the Shadowsocks proxy information into a Shadowsocks URL.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use proxy_scraper::shadowsocks::Shadowsocks;
+    /// let proxy = Shadowsocks {
+    ///     host: "example.com".to_string(),
+    ///     port: 443,
+    ///     password: "password".to_string(),
+    ///     method: "aes-256-gcm".to_string(),
+    /// };
+    /// let url = proxy.to_url();
+    /// assert_eq!(url, "ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@example.com:443");
+    /// ```
     pub fn to_url(&self) -> String {
         let base64_part = URL_SAFE.encode(format!("{}:{}", self.method, self.password));
         format!("ss://{}@{}:{}", base64_part, self.host, self.port)
     }
 
+    /// Scrapes Shadowsocks proxy information from the provided source string and returns a vector of Shadowsocks instances.
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - A string containing the source code or text from which to extract Shadowsocks proxy information.
+    ///
+    /// # Returns
+    ///
+    /// A vector of `Shadowsocks` instances parsed from the source string.
     pub fn scrape(source: &str) -> Vec<Self> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<Shadowsocks> = Vec::new();

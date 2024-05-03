@@ -85,7 +85,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(ProxyType::Hysteria) => {
             let context = fetch_url(&cli.source).await?;
-            let result = proxy_scraper::Hysteria::scrape(&context);
+            let result = proxy_scraper::hysteria::Hysteria::scrape(&context);
 
             println!("{:#?}", result);
         }

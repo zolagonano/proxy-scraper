@@ -22,7 +22,8 @@ pub trait Proxy {
     fn get_host(&self) -> &str;
     fn get_port(&self) -> u32;
 
-    #[cfg(feature = "checking")]    
+    // NOTE: This method doesn't work on wasm targets
+    /*
     fn port_check(&self) -> bool {
         #[cfg(feature = "checking")]    
         use std::net::TcpStream;
@@ -32,4 +33,5 @@ pub trait Proxy {
             Err(_) => false,
         }
     }
+    */
 }

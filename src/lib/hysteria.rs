@@ -104,4 +104,12 @@ impl Proxy for Hysteria {
 
         proxy_list
     }
+    
+    fn get_host(&self) -> &str {
+        &self.host
+    }
+
+    fn get_port(&self) -> u32 {
+        self.port
+    }
 }

@@ -24,7 +24,7 @@ pub trait Proxy {
 
     #[cfg(feature = "scraper")]
     fn port_check(&self) -> bool {
-        #[cfg(feature = "scraper")]    
+        #[cfg(feature = "checking")]    
         use std::net::TcpStream;
         // TODO: Change ports to u16 later.
         match TcpStream::connect((&self.get_host()[..], self.get_port() as u16)) {

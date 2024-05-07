@@ -15,6 +15,7 @@ documentation = "https://docs.rs/proxy-scraper/"
 [features]
 default = ["scraper", "dep:argh", "dep:reqwest", "dep:tokio"]
 scraper = []
+checking = []
 
 [lib]
 name = "proxy_scraper"

@@ -32,12 +32,9 @@ impl FromStr for ProxyType {
 macro_rules! scrape_proxy {
     ($module:ident::$struct:ident, $context:expr) => {{
         let context = fetch_url(&$context).await?;
-        let result = proxy_scraper::$module::$struct::scrape(&context)
-            .into_iter()
-            .map(|proxy| proxy.to_url())
-            .collect::<Vec<String>>();
+        let result = proxy_scraper::$module::$struct::scrape_pretty(&context);
 
-        println!("{}", result.join("\n"));
+        println!("{:#?}", result);
     }};
 }
 

@@ -104,7 +104,7 @@ impl Proxy for Hysteria {
 
         proxy_list
     }
-    
+
     fn get_host(&self) -> &str {
         &self.host
     }

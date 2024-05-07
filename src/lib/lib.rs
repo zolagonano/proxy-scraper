@@ -9,7 +9,6 @@ pub mod vless;
 pub mod vmess;
 
 use std::collections::HashSet;
-use std::net::TcpStream;
 
 pub trait Proxy {
     fn to_url(&self) -> String;
@@ -25,7 +24,8 @@ pub trait Proxy {
 
     #[cfg(feature = "scraper")]
     fn port_check(&self) -> bool {
-        #[cfg(feature = "scraper")]
+        #[cfg(feature = "scraper")]    
+        use std::net::TcpStream;
         // TODO: Change ports to u16 later.
         match TcpStream::connect((&self.get_host()[..], self.get_port() as u16)) {
             Ok(_) => true,

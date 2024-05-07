@@ -1,4 +1,4 @@
-use base64::{engine::general_purpose::URL_SAFE, Engine as _};
+use crate::Proxy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -17,13 +17,14 @@ pub struct VLess {
     pub parameters: Option<HashMap<String, String>>,
 }
 
-impl VLess {
+impl Proxy for VLess {
     /// Converts the VLess proxy information into a VLess URL.
     ///
     /// # Example
     ///
     /// ```
     /// use proxy_scraper::vless::VLess;
+    /// use proxy_scraper::Proxy;
     /// let proxy = VLess {
     ///     host: "example.com".to_string(),
     ///     port: 443,
@@ -33,7 +34,7 @@ impl VLess {
     /// let url = proxy.to_url();
     /// assert_eq!(url, "vless://00000000-0000-0000-0000-000000000000@example.com:443?");
     /// ```
-    pub fn to_url(&self) -> String {
+    fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         format!(
             "vless://{}@{}:{}?{}",
@@ -50,7 +51,7 @@ impl VLess {
     /// # Returns
     ///
     /// A vector of `VLess` instances parsed from the source string.
-    pub fn scrape(source: &str) -> Vec<Self> {
+    fn scrape(source: &str) -> Vec<impl Proxy> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<VLess> = Vec::new();
         let regex = Regex::new(r#"vless://([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})@((.+):(\d+))\?(.+)#"#).unwrap();

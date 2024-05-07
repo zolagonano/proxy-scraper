@@ -1,3 +1,4 @@
+use crate::Proxy;
 use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -25,13 +26,14 @@ pub struct VMess {
     pub metadata: Option<HashMap<String, String>>,
 }
 
-impl VMess {
+impl Proxy for VMess {
     /// Converts the VMess proxy information into a VMess URL.
     ///
     /// # Example
     ///
     /// ```
     /// use proxy_scraper::vmess::VMess;
+    /// use proxy_scraper::Proxy;
     /// let proxy = VMess {
     ///     add: "example.com".to_string(),
     ///     host: Some("www.example.com".to_string()),
@@ -45,7 +47,7 @@ impl VMess {
     /// let url = proxy.to_url();
     /// assert_eq!(url, "vmess://ewogICJhZGQiOiAiZXhhbXBsZS5jb20iLAogICJob3N0IjogInd3dy5leGFtcGxlLmNvbSIsCiAgImlkIjogInV1aWQiLAogICJwb3J0IjogNDQzLAogICJuZXQiOiAidGNwIiwKICAic25pIjogImV4YW1wbGUuY29tIiwKICAidGxzIjogInRscyIKfQ==");
     /// ```
-    pub fn to_url(&self) -> String {
+    fn to_url(&self) -> String {
         let base64_part = URL_SAFE.encode(serde_json::to_vec_pretty(&self).unwrap());
         format!("vmess://{}", base64_part)
     }
@@ -59,7 +61,7 @@ impl VMess {
     /// # Returns
     ///
     /// A vector of `VMess` instances parsed from the source string.
-    pub fn scrape(source: &str) -> Vec<Self> {
+    fn scrape(source: &str) -> Vec<impl Proxy> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<VMess> = Vec::new();
         let regex = Regex::new(

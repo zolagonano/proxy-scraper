@@ -1,3 +1,4 @@
+use crate::Proxy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -16,7 +17,7 @@ pub struct Trojan {
     pub parameters: Option<HashMap<String, String>>,
 }
 
-impl Trojan {
+impl Proxy for Trojan {
     /// Converts the Trojan proxy information into a Trojan URL.
     ///
     /// # Example
@@ -24,6 +25,7 @@ impl Trojan {
     /// ```
     /// use std::collections::HashMap;
     /// use proxy_scraper::trojan::Trojan;
+    /// use proxy_scraper::Proxy;
     /// let proxy = Trojan {
     ///     host: "example.com".to_string(),
     ///     port: 443,
@@ -33,7 +35,7 @@ impl Trojan {
     /// let url = proxy.to_url();
     /// assert_eq!(url, "trojan://password123@example.com:443?");
     /// ```
-    pub fn to_url(&self) -> String {
+    fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         format!(
             "trojan://{}@{}:{}?{}",
@@ -50,7 +52,7 @@ impl Trojan {
     /// # Returns
     ///
     /// A vector of `Trojan` instances parsed from the source string.
-    pub fn scrape(source: &str) -> Vec<Self> {
+    fn scrape(source: &str) -> Vec<impl Proxy> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<Trojan> = Vec::new();
         let regex = Regex::new(r#"trojan://([A-Za-z0-9\-._~]+)@((.+):(\d+))\?(.+)#"#).unwrap();

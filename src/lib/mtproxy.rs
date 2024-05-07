@@ -1,3 +1,4 @@
+use crate::Proxy;
 use regex::Regex;
 use url::Url;
 
@@ -12,13 +13,14 @@ pub struct MTProxy {
     pub secret: String,
 }
 
-impl MTProxy {
+impl Proxy for MTProxy {
     /// Converts the MTProxy information into a Telegram proxy URL.
     ///
     /// # Example
     ///
     /// ```
     /// use proxy_scraper::mtproxy::MTProxy;
+    /// use proxy_scraper::Proxy;
     /// let proxy = MTProxy {
     ///     host: "example.com".to_string(),
     ///     port: 443,
@@ -27,7 +29,7 @@ impl MTProxy {
     /// let url = proxy.to_url();
     /// assert_eq!(url, "https://t.me/proxy?server=example.com&port=443&secret=abcdef0123456789");
     /// ```
-    pub fn to_url(&self) -> String {
+    fn to_url(&self) -> String {
         format!(
             "https://t.me/proxy?server={}&port={}&secret={}",
             self.host, self.port, self.secret
@@ -43,7 +45,7 @@ impl MTProxy {
     /// # Returns
     ///
     /// A vector of `MTProxy` instances parsed from the source string.
-    pub fn scrape(source: &str) -> Vec<Self> {
+    fn scrape(source: &str) -> Vec<impl Proxy> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<MTProxy> = Vec::new();
         let regex = Regex::new(

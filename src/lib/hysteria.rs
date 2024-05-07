@@ -1,3 +1,4 @@
+use crate::Proxy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -18,12 +19,13 @@ pub struct Hysteria {
     pub parameters: Option<HashMap<String, String>>,
 }
 
-impl Hysteria {
+impl Proxy for Hysteria {
     /// Converts the Hysteria proxy information into a Hysteria URL.
     ///
     /// # Example
     ///
     /// ```
+    /// use proxy_scraper::Proxy;
     /// use proxy_scraper::hysteria::Hysteria;
     /// use std::collections::HashMap;
     /// let proxy = Hysteria {
@@ -36,7 +38,7 @@ impl Hysteria {
     /// let url = proxy.to_url();
     /// assert_eq!(url, "hysteria://auth123@example.com:443?");
     /// ```
-    pub fn to_url(&self) -> String {
+    fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         let hysteria_version = match self.version {
             1 => "hysteria",
@@ -58,7 +60,7 @@ impl Hysteria {
     /// # Returns
     ///
     /// A vector of `Hysteria` instances parsed from the source string.
-    pub fn scrape(source: &str) -> Vec<Self> {
+    fn scrape(source: &str) -> Vec<impl Proxy> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<Hysteria> = Vec::new();
         let regex =

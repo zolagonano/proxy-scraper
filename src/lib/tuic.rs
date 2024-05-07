@@ -1,3 +1,4 @@
+use crate::Proxy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -16,7 +17,7 @@ pub struct TUIC {
     pub parameters: Option<HashMap<String, String>>,
 }
 
-impl TUIC {
+impl Proxy for TUIC {
     /// Converts the TUIC proxy information into a TUIC URL.
     ///
     /// # Example
@@ -24,6 +25,7 @@ impl TUIC {
     /// ```
     /// use proxy_scraper::tuic::TUIC;
     /// use std::collections::HashMap;
+    /// use proxy_scraper::Proxy;
     /// let proxy = TUIC {
     ///     host: "example.com".to_string(),
     ///     port: 443,
@@ -33,7 +35,7 @@ impl TUIC {
     /// let url = proxy.to_url();
     /// assert_eq!(url, "tuic://auth123@example.com:443?");
     /// ```
-    pub fn to_url(&self) -> String {
+    fn to_url(&self) -> String {
         let url_encoded_parameters = serde_urlencoded::to_string(&self.parameters).unwrap();
         format!(
             "tuic://{}@{}:{}?{}",
@@ -50,7 +52,7 @@ impl TUIC {
     /// # Returns
     ///
     /// A vector of `TUIC` instances parsed from the source string.
-    pub fn scrape(source: &str) -> Vec<Self> {
+    fn scrape(source: &str) -> Vec<impl Proxy> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<TUIC> = Vec::new();
         let regex = Regex::new(r#"tuic://([A-Za-z0-9\-._~]+)@((.+):(\d+))\?(.+)#"#).unwrap();

@@ -1,3 +1,4 @@
+use crate::Proxy;
 use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 use regex::Regex;
 
@@ -14,13 +15,14 @@ pub struct Shadowsocks {
     pub method: String,
 }
 
-impl Shadowsocks {
+impl Proxy for Shadowsocks {
     /// Converts the Shadowsocks proxy information into a Shadowsocks URL.
     ///
     /// # Example
     ///
     /// ```
     /// use proxy_scraper::shadowsocks::Shadowsocks;
+    /// use proxy_scraper::Proxy;
     /// let proxy = Shadowsocks {
     ///     host: "example.com".to_string(),
     ///     port: 443,
@@ -30,7 +32,7 @@ impl Shadowsocks {
     /// let url = proxy.to_url();
     /// assert_eq!(url, "ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@example.com:443");
     /// ```
-    pub fn to_url(&self) -> String {
+    fn to_url(&self) -> String {
         let base64_part = URL_SAFE.encode(format!("{}:{}", self.method, self.password));
         format!("ss://{}@{}:{}", base64_part, self.host, self.port)
     }
@@ -44,7 +46,7 @@ impl Shadowsocks {
     /// # Returns
     ///
     /// A vector of `Shadowsocks` instances parsed from the source string.
-    pub fn scrape(source: &str) -> Vec<Self> {
+    fn scrape(source: &str) -> Vec<impl Proxy> {
         let source = crate::utils::seperate_links(source);
         let mut proxy_list: Vec<Shadowsocks> = Vec::new();
         let regex = Regex::new(

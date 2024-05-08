@@ -22,8 +22,22 @@ pub trait Proxy {
     fn get_host(&self) -> &str;
     fn get_port(&self) -> u32;
 
+    #[cfg(feature = "checking")]
+    fn url_test(&self) -> Result<u128, String> {
+        let url = format!("https://{}:{}", self.get_host(), self.get_port());
 
-    #[cfg(feature = "checking")]    
+        let start = std::time::Instant::now();
+
+        match reqwest::blocking::get(url) {
+            Ok(_) => {
+                let elapsed = start.elapsed().as_millis();
+                Ok(elapsed)
+            }
+            Err(e) => Err(e.to_string()),
+        }
+    }
+
+    #[cfg(feature = "checking")]
     fn port_check(&self) -> bool {
         use std::net::TcpStream;
         // TODO: Change ports to u16 later.

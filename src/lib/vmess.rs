@@ -23,7 +23,7 @@ pub struct VMess {
     pub tls: Option<String>,
     /// Additional metadata associated with the VMess server.
     #[serde(flatten)]
-    pub metadata: Option<HashMap<String, String>>,
+    pub metadata: HashMap<String, String>,
 }
 
 impl Proxy for VMess {
@@ -34,6 +34,7 @@ impl Proxy for VMess {
     /// ```
     /// use proxy_scraper::vmess::VMess;
     /// use proxy_scraper::Proxy;
+    /// use std::collections::HashMap;
     /// let proxy = VMess {
     ///     add: "example.com".to_string(),
     ///     host: Some("www.example.com".to_string()),
@@ -42,7 +43,7 @@ impl Proxy for VMess {
     ///     net: "tcp".to_string(),
     ///     sni: Some("example.com".to_string()),
     ///     tls: Some("tls".to_string()),
-    ///     metadata: None,
+    ///     metadata: HashMap::new(),
     /// };
     /// let url = proxy.to_url();
     /// assert_eq!(url, "vmess://ewogICJhZGQiOiAiZXhhbXBsZS5jb20iLAogICJob3N0IjogInd3dy5leGFtcGxlLmNvbSIsCiAgImlkIjogInV1aWQiLAogICJwb3J0IjogNDQzLAogICJuZXQiOiAidGNwIiwKICAic25pIjogImV4YW1wbGUuY29tIiwKICAidGxzIjogInRscyIKfQ==");
@@ -77,9 +78,12 @@ impl Proxy for VMess {
             }
 
             if let Ok(decoded_base64_part) = URL_SAFE.decode(&base64_part) {
-                let json_string = String::from_utf8(decoded_base64_part).unwrap();
+                let json_string = String::from_utf8(decoded_base64_part).unwrap_or("".to_string());
 
-                let deserialized_vmess: VMess = serde_json::from_str(&json_string).unwrap();
+                let deserialized_vmess: VMess = match serde_json::from_str(&json_string) {
+                    Ok(vmess) => vmess,
+                    Err(_) => continue,
+                };
 
                 proxy_list.push(deserialized_vmess);
             }
@@ -92,6 +96,24 @@ impl Proxy for VMess {
     }
 
     fn get_port(&self) -> u32 {
-        self.port.as_str().unwrap().parse().unwrap()
+        self.port.as_str().unwrap_or("0").parse().unwrap()
+    }
+
+    fn get_network(&self) -> String {
+        self.metadata
+            .get("net")
+            .unwrap_or(&"TCP".to_string())
+            .to_uppercase()
+    }
+
+    fn get_security(&self) -> String {
+        self.metadata
+            .get("security")
+            .unwrap_or(&"NONE".to_string())
+            .to_uppercase()
+    }
+
+    fn get_type(&self) -> &str {
+        "VMESS"
     }
 }

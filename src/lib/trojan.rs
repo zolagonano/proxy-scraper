@@ -14,7 +14,7 @@ pub struct Trojan {
     pub password: String,
     /// Additional parameters associated with the Trojan proxy.
     #[serde(flatten)]
-    pub parameters: Option<HashMap<String, String>>,
+    pub parameters: HashMap<String, String>,
 }
 
 impl Proxy for Trojan {
@@ -30,7 +30,7 @@ impl Proxy for Trojan {
     ///     host: "example.com".to_string(),
     ///     port: 443,
     ///     password: "password123".to_string(),
-    ///     parameters: Some(HashMap::new()), // Insert additional parameters here
+    ///     parameters: HashMap::new(), // Insert additional parameters here
     /// };
     /// let url = proxy.to_url();
     /// assert_eq!(url, "trojan://password123@example.com:443?");
@@ -78,7 +78,7 @@ impl Proxy for Trojan {
                 host: host.to_string(),
                 port: port.parse::<u32>().unwrap_or(0),
                 password: password.to_string(),
-                parameters: Some(parameters),
+                parameters: parameters,
             };
 
             proxy_list.push(trojan_proxy);
@@ -92,5 +92,23 @@ impl Proxy for Trojan {
 
     fn get_port(&self) -> u32 {
         self.port
+    }
+
+    fn get_network(&self) -> String {
+        self.parameters
+            .get("type")
+            .unwrap_or(&"TCP".to_string())
+            .to_uppercase()
+    }
+
+    fn get_security(&self) -> String {
+        self.parameters
+            .get("security")
+            .unwrap_or(&"NONE".to_string())
+            .to_uppercase()
+    }
+
+    fn get_type(&self) -> &str {
+        "TR"
     }
 }

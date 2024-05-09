@@ -12,15 +12,32 @@ use std::collections::HashSet;
 
 pub trait Proxy {
     fn to_url(&self) -> String;
+    fn to_url_pretty(&self) -> String {
+        format!(
+            "{}#{}-{}-{}%20{}:{}",
+            self.to_url(),
+            self.get_type(),
+            self.get_network(),
+            self.get_security(),
+            self.get_host(),
+            self.get_port(),
+        )
+    }
+
     fn scrape(source: &str) -> Vec<impl Proxy>;
     fn scrape_pretty(source: &str) -> HashSet<String> {
         Self::scrape(source)
             .into_iter()
-            .map(|proxy| proxy.to_url())
+            .map(|proxy| proxy.to_url_pretty())
             .collect()
     }
     fn get_host(&self) -> &str;
     fn get_port(&self) -> u32;
+
+    fn get_network(&self) -> String;
+    fn get_security(&self) -> String;
+
+    fn get_type(&self) -> &str;
 
     #[cfg(feature = "checking")]
     fn url_test(&self) -> Result<u128, String> {

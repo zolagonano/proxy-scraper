@@ -94,4 +94,16 @@ impl Proxy for MTProxy {
     fn get_port(&self) -> u32 {
         self.port
     }
+
+    fn get_network(&self) -> String {
+        "TCP".to_string()
+    }
+
+    fn get_security(&self) -> String {
+        "TLS".to_string()
+    }
+
+    fn get_type(&self) -> &str {
+        "MTPROXY"
+    }
 }

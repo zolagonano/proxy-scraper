@@ -14,7 +14,7 @@ pub struct VLess {
     pub id: String,
     /// Additional parameters associated with the VLess proxy.
     #[serde(flatten)]
-    pub parameters: Option<HashMap<String, String>>,
+    pub parameters: HashMap<String, String>,
 }
 
 impl Proxy for VLess {
@@ -24,12 +24,13 @@ impl Proxy for VLess {
     ///
     /// ```
     /// use proxy_scraper::vless::VLess;
+    /// use std::collections::HashMap;
     /// use proxy_scraper::Proxy;
     /// let proxy = VLess {
     ///     host: "example.com".to_string(),
     ///     port: 443,
     ///     id: "00000000-0000-0000-0000-000000000000".to_string(),
-    ///     parameters: None,
+    ///     parameters: HashMap::new(),
     /// };
     /// let url = proxy.to_url();
     /// assert_eq!(url, "vless://00000000-0000-0000-0000-000000000000@example.com:443?");
@@ -73,7 +74,7 @@ impl Proxy for VLess {
                 host: host.to_string(),
                 port: port.parse::<u32>().unwrap_or(0),
                 id: uuid.to_string(),
-                parameters: Some(parameters),
+                parameters: parameters,
             };
 
             proxy_list.push(vless_proxy);
@@ -87,5 +88,23 @@ impl Proxy for VLess {
 
     fn get_port(&self) -> u32 {
         self.port
+    }
+
+    fn get_network(&self) -> String {
+        self.parameters
+            .get("type")
+            .unwrap_or(&"TCP".to_string())
+            .to_uppercase()
+    }
+
+    fn get_security(&self) -> String {
+        self.parameters
+            .get("security")
+            .unwrap_or(&"NONE".to_string())
+            .to_uppercase()
+    }
+
+    fn get_type(&self) -> &str {
+        "VLESS"
     }
 }

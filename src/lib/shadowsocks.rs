@@ -91,4 +91,16 @@ impl Proxy for Shadowsocks {
     fn get_port(&self) -> u32 {
         self.port
     }
+
+    fn get_network(&self) -> String {
+        "TCP".to_string()
+    }
+
+    fn get_security(&self) -> String {
+        "NONE".to_string()
+    }
+
+    fn get_type(&self) -> &str {
+        "SHADOWSOCKS"
+    }
 }

@@ -13,6 +13,10 @@ use std::collections::HashSet;
 pub trait Proxy {
     fn to_url(&self) -> String;
     fn to_url_pretty(&self) -> String {
+        if self.get_type() == "MTPROXY" || self.get_type() == "VMESS" {
+            return self.to_url();
+        };
+
         format!(
             "{}#{}-{}-{}%20{}:{}",
             self.to_url(),

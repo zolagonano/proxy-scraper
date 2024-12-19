@@ -75,6 +75,9 @@ impl Proxy for Shadowsocks {
                 };
             let parts: Vec<&str> = decoded_base64_part.split(":").collect();
 
+            if parts.len() < 2 {
+                continue;
+            }
             let method = parts[0].to_string();
             let password = parts[1].to_string();
 

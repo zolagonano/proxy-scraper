@@ -68,11 +68,15 @@ impl Proxy for Shadowsocks {
                 continue;
             }
 
-            let decoded_base64_part =
-                match String::from_utf8(URL_SAFE.decode(&base64_part).unwrap()) {
-                    Ok(decoded) => decoded,
-                    Err(_) => continue,
-                };
+            let url_safe_decoded_part = match URL_SAFE.decode(&base64_part) {
+                Ok(decoded) => decoded,
+                Err(_) => continue,
+            };
+
+            let decoded_base64_part = match String::from_utf8(url_safe_decoded_part) {
+                Ok(decoded) => decoded,
+                Err(_) => continue,
+            };
             let parts: Vec<&str> = decoded_base64_part.split(":").collect();
 
             if parts.len() < 2 {
